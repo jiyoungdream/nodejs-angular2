@@ -15,15 +15,19 @@ log.setLevel(Constants.LOGLEVEL);
 // express.static를 사용해 static폴더를 지정하였습니다.
 app.use(express.static(__dirname + '/public')); // 1
 
+//
+
+
 // like interceptor
 app.use(function(req, res, next) {
   // Put some preprocessing here.
-  console.log("req.ip :: " + req.ip);
-  console.log("req.hostname :: " + req.hostname);
-  console.log("req.baseUrl :: " + req.baseUrl);
-  console.log("req.originalUrl :: " + req.originalUrl);
-  console.log("req.url :: " + req.url);
-  
+  log.debug("req.ip :: " + req.ip);
+  log.debug("req.hostname :: " + req.hostname);
+  log.debug("req.baseUrl :: " + req.baseUrl);
+  log.debug("req.originalUrl :: " + req.originalUrl);
+  log.debug("req.url :: " + req.url);
+
+  // 다음 실행
   next();
 });
 
@@ -38,6 +42,19 @@ app.post('/postlist', testApi.postList);
 app.get('*', function(req, res) {
   res.sendFile(__dirname + '/public/' + 'index.html');
 })
+
+/*
+* 에러 페이지 처리 추가
+*/
+app.use(function(err, req, res, next) {
+  console.error(err.stack);
+  res.status(500).sendFile(__dirname + '/public/' + 'error.html');
+});
+
+app.use(function(req, res, next) {
+  res.status(404).sendFile(__dirname + '/public/' + 'error.html');
+});
+
 app.listen(3000, function(){ //3000번 포트를 사용합니다.
- console.log('Server On!'); //서버가 실행되면 콘솔창에 표시될 메세지입니다.
+ log.debug('Server On!'); //서버가 실행되면 콘솔창에 표시될 메세지입니다.
 });
