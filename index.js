@@ -32,8 +32,9 @@ var testApi = require('./api/test');
 app.get('/getlist', testApi.getList);
 app.post('/postlist', testApi.postList);
 
-// The reason this does not work is that your server is not catching 
+// The reason this does not work is that your server is not catching
 // all other routes and routing them to your single page app which is served
+// for angular2 
 app.get('*', function(req, res) {
   res.sendfile(__dirname + '/public/' + 'index.html');
 })
