@@ -18,7 +18,9 @@ log.setLevel(Constants.LOGLEVEL);
 app.use(express.static(__dirname + '/public')); // 1
 
 // Corss-Domain Allow Setting
-app.use(cors);
+if (Constants.DEV) {
+  app.use(cors());
+}
 
 // like interceptor
 app.use(function(req, res, next) {
