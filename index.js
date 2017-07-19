@@ -3,6 +3,8 @@
 ﻿var express = require('express'); // 설치한 express module을 불러와서 변수(express)에 담습니다.
 var routes  = require('route');
 var log = require('loglevel');
+var cors = require('cors'); // Corss-Domain Origin Access 설정
+
 
 
 var app = express(); //express를 실행하여 app object를 초기화 합니다.
@@ -15,8 +17,8 @@ log.setLevel(Constants.LOGLEVEL);
 // express.static를 사용해 static폴더를 지정하였습니다.
 app.use(express.static(__dirname + '/public')); // 1
 
-//
-
+// Corss-Domain Allow Setting
+app.use(cors);
 
 // like interceptor
 app.use(function(req, res, next) {
