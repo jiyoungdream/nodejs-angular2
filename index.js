@@ -40,6 +40,9 @@ var testApi = require('./api/test');
 app.get('/getlist', testApi.getList);
 app.post('/postlist', testApi.postList);
 
+var  promiseApi = require('./api/promise');
+app.get('/promise', promiseApi.promise);
+
 // The reason this does not work is that your server is not catching
 // all other routes and routing them to your single page app which is served
 // for angular2
