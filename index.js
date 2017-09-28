@@ -55,7 +55,7 @@ app.get('*', function(req, res) {
 */
 app.use(function(err, req, res, next) {
   console.error(err.stack);
-  res.status(500).sendFile(__dirname + '/public/' + 'error.html');
+  res.status(500).sendFile(__dirname + '/public/' + 'error-500.html');
 });
 
 app.use(function(req, res, next) {
