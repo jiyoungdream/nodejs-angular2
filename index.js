@@ -1,17 +1,36 @@
 //index.js
 
 ﻿var express = require('express'); // 설치한 express module을 불러와서 변수(express)에 담습니다.
+var session = require('express-session'); // session 정보
 var routes  = require('route');
 var log = require('loglevel');
 var cors = require('cors'); // Corss-Domain Origin Access 설정
-
-
 
 var app = express(); //express를 실행하여 app object를 초기화 합니다.
 
 // Constants
 var Constants = require("./const");
 log.setLevel(Constants.LOGLEVEL);
+
+// Redis
+var redis = require("./redis/conf");
+var redisStore = require('connect-redis')(session);
+
+app.use(session({
+    store: new redisStore({
+        client: redis,
+        host: 'localhost',
+        port: 6379,
+        prefix : "session:",
+        db : 0,
+        saveUninitialized: false,
+        resave: true
+    }),
+
+    secret: "node test",
+    cookie: { maxAge: 2592000000 }
+
+}));
 
 // app.use는 HTTP method에 상관없이 무조건 실행되는 부분입니다.
 // express.static를 사용해 static폴더를 지정하였습니다.
@@ -25,20 +44,35 @@ if (Constants.DEV) {
 // like interceptor
 app.use(function(req, res, next) {
   // Put some preprocessing here.
-  log.debug("req.ip :: " + req.ip);
-  log.debug("req.hostname :: " + req.hostname);
-  log.debug("req.baseUrl :: " + req.baseUrl);
-  log.debug("req.originalUrl :: " + req.originalUrl);
-  log.debug("req.url :: " + req.url);
+  // log.debug("req.ip :: " + req.ip);
+  // log.debug("req.hostname :: " + req.hostname);
+  // log.debug("req.baseUrl :: " + req.baseUrl);
+  // log.debug("req.originalUrl :: " + req.originalUrl);
+  // log.debug("req.url :: " + req.url);
 
   // 다음 실행
   next();
+});
+
+
+app.get('/session/set/:value', function(req, res) {
+    req.session.redSession = req.params.value;
+    res.send('session written in Redis successfully');
+});
+
+app.get('/session/get/', function(req, res) {
+    if(req.session.redSession)
+        res.send('the session value stored in Redis is: ' + req.session.redSession);
+    else
+        res.send("no session value stored in Redis ");
 });
 
 // api
 var testApi = require('./api/test');
 app.get('/getlist', testApi.getList);
 app.post('/postlist', testApi.postList);
+app.get('/abcd', testApi.abcd);
+
 
 var  promiseApi = require('./api/promise');
 app.get('/promise', promiseApi.promise);
@@ -48,7 +82,7 @@ app.get('/promise', promiseApi.promise);
 // for angular2
 app.get('*', function(req, res) {
   res.sendFile(__dirname + '/public/' + 'index.html');
-})
+});
 
 /*
 * 에러 페이지 처리 추가

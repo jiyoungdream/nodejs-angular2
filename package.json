@@ -14,5 +14,8 @@
     "loglevel": "^1.4.1",
     "node-interceptor": "0.0.2",
     "route": "^0.2.5"
+  },
+  "devDependencies": {
+    "grunt": "^1.0.1"
   }
 }
